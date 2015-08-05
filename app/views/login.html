@@ -1,0 +1,194 @@
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.default.min.css" />
+
+	<script src="scripts/app.js"></script>
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+</head>
+
+<body>
+        <div id="example">
+        <div class="demo-section k-header">
+        <div id="tickets">
+            <form id="loginForm" class="col s12" method="post" action="#">
+                <ul id="fieldlist">
+                    <li>
+                        <label for="username" class="required">Username</label>
+                        <input type="text" id="username" name="username" class="k-textbox" placeholder="Username.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+					<li>
+                        <label for="password" class="required">Password</label>
+                        <input type="password" id="password" name="password" class="k-textbox" placeholder="Password.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+				   
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" id="submit">Login</button>
+                    </li>
+                    <li class="status">
+                    </li>
+					<li>
+						<li><a ng-href="#/register">Sign Up</a></li>
+					</li>
+                </ul>
+            </form>
+        </div>
+        </div>
+
+            <style>
+                #fieldlist {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                #fieldlist li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                    text-align: left;
+                }
+
+                #fieldlist label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                #fieldlist li.status {
+                    text-align: center;
+                }
+
+                #fieldlist li .k-widget:not(.k-tooltip),
+                #fieldlist li .k-textbox {
+                    margin: 0 5px 5px 0;
+                }
+
+                .confirm {
+                    padding-top: 1em;
+                }
+
+                .valid {
+                    color: green;
+                }
+
+                .invalid {
+                    color: red;
+                }
+
+                #fieldlist li input[type="checkbox"] {
+                    margin: 0 5px 0 0;
+                }
+
+                span.k-widget.k-tooltip-validation {
+                  display; inline-block;
+                    width: 160px;
+                    text-align: left;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    background: none;
+                    box-shadow: none;
+                    color: red;
+                }
+
+                .k-tooltip-validation .k-warning {
+                    display: none;
+                }
+            </style>
+
+            <script>
+                $(document).ready(function() {
+                    var validator = $("#loginForm").kendoValidator().data("kendoValidator"),
+                    status = $(".status");
+                    var temp= 0;
+        
+                    $("#loginForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var username = $('[name=username]').val();
+                       var password = $('[name=password]').val();
+					   
+                     $.ajax({
+                                        dataType : "json",
+                                        url: "http://192.168.1.47:9000/api/service/login/users",
+                                        type: "POST",
+                                        contentType: "application/x-www-form-urlencoded",
+                                        data: "username="+username+"&password="+password,
+                                       
+						success : function (result) {
+							
+												var myObject = decodeURIComponent($.param(result));
+												console.log(result);
+												var obj = myObject.split("&");
+												var obj1 = obj[0].split("=");
+												var obj2 = obj[0].split("=");
+												alert(myObject);
+												alert(obj1[1]);
+												 
+                                                if(myObject.length== 0)
+                                                {
+                                                	//return result;
+                                                    //status.text("gagal! ");
+													window.alert("gagal");
+                                                    window.location.href = "/#/login";
+                                                    
+                                                }
+                                                else
+                                                {
+												/*	status.text("sukses!");
+													window.location.href = "/#/issues/"+obj1[1];
+													*/
+													 $.ajax({
+														dataType : "json",
+														url: "http://192.168.1.47:9000/api/viewProject/"+obj1[1],
+														type: "GET",
+														contentType: "application/x-www-form-urlencoded",
+														data: "id_user="+obj1[1],
+														
+														success : function (result) {
+							
+															var myObject2 = decodeURIComponent($.param(result));
+															console.log(result);
+															var obj = myObject2.split("&");
+															var obj1 = obj[0].split("=");
+															alert(myObject2);
+															alert(obj1[1]);
+												 
+															if(myObject2.length != 0)
+															{
+																//status.text("sukses!");
+																window.location.href = "/#/issues/"+obj1[1];                                                    
+															}else{																													
+																//return result;
+																//status.text("gagal! ");
+																window.alert("gagal");
+																window.location.href = "/#/project/"+obj2[1];
+															}
+															},
+														error : function (test, errorThrown) {
+															window.alert("gagal");
+															temp = 0;
+															},
+													});
+													
+													//---------------------
+                                                                
+                                                }
+                                         },
+                                        error : function (test, errorThrown) {
+                                                window.alert("gagal");
+                                                temp = 0;
+                                        },
+                                       
+                                    });    
+                    });
+                });
+            </script>
+            
+        </div>
+		</body>
+		</html>

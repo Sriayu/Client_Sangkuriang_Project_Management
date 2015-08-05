@@ -1,0 +1,148 @@
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.default.min.css" />
+
+	<script src="scripts/app.js"></script>
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+</head>
+
+<body>
+        <div id="example">
+        <div class="demo-section k-header">
+        <div id="tickets">
+            <form id="RegistrationForm" class="col s12" method="post" action="#">
+                <ul id="fieldlist">
+                    <li>
+                        <label for="username" class="required">Username</label>
+                        <input type="text" id="username" name="username" class="k-textbox" placeholder="Username.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    <li>
+                        <label for="email" class="required">Email</label>
+                        <input type="email" id="email" name="email" class="k-textbox" placeholder="Email.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+					<li>
+                        <label for="password" class="required">Password</label>
+                        <input type="password" id="password" name="password" class="k-textbox" placeholder="Password.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    
+				   
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" id="submit">Submit</button>
+                    </li>
+                    <li class="status">
+                    </li>
+					
+                </ul>
+            </form>
+        </div>
+        </div>
+
+            <style>
+                #fieldlist {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                #fieldlist li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                    text-align: left;
+                }
+
+                #fieldlist label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                #fieldlist li.status {
+                    text-align: center;
+                }
+
+                #fieldlist li .k-widget:not(.k-tooltip),
+                #fieldlist li .k-textbox {
+                    margin: 0 5px 5px 0;
+                }
+
+                .confirm {
+                    padding-top: 1em;
+                }
+
+                .valid {
+                    color: green;
+                }
+
+                .invalid {
+                    color: red;
+                }
+
+                #fieldlist li input[type="checkbox"] {
+                    margin: 0 5px 0 0;
+                }
+
+                span.k-widget.k-tooltip-validation {
+                  display; inline-block;
+                    width: 160px;
+                    text-align: left;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    background: none;
+                    box-shadow: none;
+                    color: red;
+                }
+
+                .k-tooltip-validation .k-warning {
+                    display: none;
+                }
+            </style>
+
+            <script>
+                $(document).ready(function() {
+                    var validator = $("#RegistrationForm").kendoValidator().data("kendoValidator"),
+                    status = $(".status");
+                    var temp= 0;
+        
+                    $("#RegistrationForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var username = $('[name=username]').val();
+                       var email = $('[name=email]').val();
+                       var password = $('[name=password]').val();
+                    
+                       window.alert( $('[name=username]').val() );
+                       window.alert( $('[name=email]').val() );
+                       window.alert( $('[name=password]').val() );
+                     $.ajax({
+                                        dataType : "json",
+                                        url: "http://192.168.1.47:9000/api/service/users",
+                                        type: "POST",
+                                        contentType: "application/x-www-form-urlencoded",
+                                        data: "username="+username+"&email="+email+"&password="+password,
+                                       
+						success : function (result) {
+                                                    status.text("sukses!");
+                                                    window.location.href = "/#/login";
+                                                                         
+                                         },
+                                        error : function (test, errorThrown) {
+                                                window.alert("gagal");
+                                                temp = 0;
+                                        },
+                                       
+                                    });                         
+                         
+                       
+                    });
+                });
+            </script>
+            
+        </div>
+		</body>
+		</html>

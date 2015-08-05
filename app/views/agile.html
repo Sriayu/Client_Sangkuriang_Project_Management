@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="styles/kendo-styles/kendo.common.min.css" rel="stylesheet">
+    <link href="styles/kendo-styles/kendo.default.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/detail.css">
+    <script src="scripts/kendo-scripts/kendo.dropdownlist.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.common-material.min.css" />
+    <link rel="stylesheet" href="http://cdn.kendostatic.com/2015.2.624/styles/kendo.material.min.css" />
+    <script src="scripts/console.js"></script>
+	<script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+	 <script src="scripts/detail.js"></script>
+</head>
+<body>
+        <div id="example">
+              <div class="demo-section">
+				<input type="button" id="btnShowComment" value="create agile" />
+				<br /><br />           
+	<div id="output"></div>
+	<div id="overlay" class="web_dialog_overlay"></div>
+	<div id="dialog" class="web_dialog">
+	  <table style="width: 100%; border: 0px;" cellpadding="3" cellspacing="0">
+			<tr>
+				  <td class="web_dialog_title">Agile</td>
+				  <td class="web_dialog_title align_right">
+						<a href="#" id="btnClose">Close</a>
+				  </td>
+			</tr>
+			<tr>
+				  <td colspan="2" style="padding-left: 15px;">
+						<div >
+							  <div >
+									<div id="tickets">
+										  <form id="AgileForm" class="col s12" method="post" action="#">
+												<ul id="fieldlist">
+													  <li>
+															<label for="name_agile" class="required">Nama Agile</label>
+															<input type="text" id="name_agile" name="name_agile" class="k-textbox" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li>
+															<label for="txt_comment" class="required">Project</label>
+															<input type="text" id="id_project" name="id_project" class="k-textbox" placeholder="Comment" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													   <li class="confirm">
+															<button class="k-button k-primary" type="submit" id="submit">Submit</button>
+													  </li>
+													  <li class="status">
+													  </li>
+					
+												</ul>
+										  </form>
+									</div>
+							  </div>
+						</div>
+				  </td>
+			</tr>
+    </table>
+</div>
+                <div class="list-wrapper">
+                    <ul id="listA"></ul>
+                    <ul id="listB"></ul>
+                    <ul id="listC"></ul>
+                    <ul id="listD"></ul>
+                </div>
+				<div id="overlayAgile" class="web_dialog_overlay"></div>
+	<div id="dialogAgile" class="web_dialog" height="300%">
+	  <table style="width: 100%; border: 0px; height: 100%;" cellpadding="0" cellspacing="0">
+			<tr>
+				  <td class="web_dialog_title">Agile</td>
+				  <td class="web_dialog_title align_right">
+						<a onClick="history.go()" id="btnClose">Close</a>
+				  </td>
+			</tr>
+			<tr>
+				  <td colspan="2" style="padding-left: 10px;">
+						<div >
+							  <div >
+									<div id="tickets">
+										  <form id="UpdateAgileForm" class="col s12" method="post" action="#" height= "500px">
+												<ul id="fieldlist">
+													  <li>
+															<label for="name_issue" class="required">Nama Issue</label>
+															<input type="text" id="name_issue" name="name_issue" class="k-textbox" placeholder="Nama Issue" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li>
+															<label for="description" class="required">Description</label>
+															<input type="text" id="description" name="description" class="k-textbox" placeholder="Description" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li>
+															<label for="priority" class="required">Priority</label>
+															<input type="text" id="priority" name="priority" class="k-textbox" placeholder="Priority" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li>
+															<label for="type" class="required">Type</label>
+															<input type="text" id="type" name="type" class="k-textbox" placeholder="Type" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li>
+															<label for="type" class="required">Due Date</label>
+															<input type="text" id="datepicker" name="datepicker" class="k-textbox" placeholder="Due Date" required validationMessage="Enter {0}" style="width: 220px;" />
+													  </li>
+													  <li class="confirm">
+															<button class="k-button k-primary" type="submit" id="submitAgile">Submit</button>
+													  
+												</ul>
+										  </form>
+									</div>
+							  </div>
+						</div>
+				  </td>
+			</tr>
+     </table>
+</div>
+            </div>
+            <div class="box">
+                <h4>Console log</h4>
+                <div class="console"></div>
+            </div>
+            <script>
+                
+                $(document).ready(function() {
+					  $("#datepicker").kendoDatePicker();
+					//dropdownlistCreateProject
+					$("#id_project").kendoDropDownList({
+                  dataSource: {
+                   transport: {
+                      read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.34:8000/api/services/project"
+						    }
+						},
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+									    project_name: { validation: { required: true } },
+									    description: { validation: { required: true } },
+										project_lead: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                  },
+				 dataTextField: "project_name",
+                  dataValueField: "id",
+                  index: 1,
+                });
+				//AgileCreateForm
+				var validator = $("#AgileForm").kendoValidator().data("kendoValidator");
+                    $("#AgileForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var name_agile = $('[name=name_agile]').val();
+                       var project = $('[name=id_project]').val();
+					   var state= 5;
+					   var status_agile= "agile";
+                       
+                     $.ajax({
+                                        dataType : "json",
+                                        url: "http://192.168.1.34:8000/api/service/issue",
+                                        type: "POST",
+                                        contentType: "application/x-www-form-urlencoded",
+                                          data: "name_issue="+""+"&description="+""+"&priority="+1+"&type="+1+"&assigned_by="+""+"&attachment="+""+"&id_project="+project+"&name_agile="+name_agile+"&state="+state+"&status="+status_agile+"&id_user="+7,
+										
+										success : function (result) {
+                                                   // alert("sukses coy!!");
+													document.location.reload(); 
+                                                                         
+                                         },
+                                        error : function (test, errorThrown) {
+                                                window.alert("gagal");
+                                        },
+                                       
+                                    }); 
+									HideDialog();
+                    });
+					var validator = $("#UpdateAgileForm").kendoValidator().data("kendoValidator"),
+                    status = $(".status");
+                    
+                    $("#UpdateAgileForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var name_issue = $('[name=name_issue]').val();
+                       var description = $('#description').val();
+					   var priority = $('[name=priority]').val();
+					   var type = $('[name=type]').val();
+					   var id_listA= $("#listA").data("kendoListView").dataItems()[0].id;
+					   var due_date=$("#datepicker").val();
+					   alert(due_date);
+				     $.ajax({
+                                        dataType : "json",
+									    url : "http://192.168.1.47:9000/api/service/updateagile/issue/"+id_listA,
+									    type : "post",
+									    contentType: "application/x-www-form-urlencoded",
+                                        data: "name_issue="+name_issue+"&description="+description+"&priority="+priority+"&type="+type+"&due_date="+due_date,
+										
+										success : function (result) {
+													document.location.reload();
+                                                                         
+                                         },
+                                        error : function (test, errorThrown) {
+											alert("Gagal");
+                                        },
+                                       
+                                    }); 
+									HideDialog();
+                    });
+				
+				$("#type").kendoDropDownList({
+                  dataSource: {
+                   transport: {
+                      read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.34:8000/api/services/type"
+						    }
+						},
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+									    type_name: { validation: { required: true }}
+                            		}
+                        			}
+                        		}
+                  },
+				 dataTextField: "type_name",
+                  dataValueField: "id",
+                  index: 1,
+                });
+				$("#priority").kendoDropDownList({
+                  dataSource: {
+                   transport: {
+                      read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.34:8000/api/services/priority"
+						    }
+						},
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+									    priority_name: { validation: { required: true } },
+			                   		}
+                        			}
+                        		}
+                  },
+				 dataTextField: "priority_name",
+                  dataValueField: "id",
+                  index: 1,
+                });
+					//dropdownlist1
+                    $("#dropdownlist").kendoDropDownList({
+                  dataSource: {
+                   transport: {
+                      read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.34:8000/api/service/agile/agile_name/test/7"
+                                }
+                    },
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+										id_user: { validation: { required: true } },
+										name_issue: { validation: { required: true } },
+									    id_project: { validation: { required: true } },
+										description: { validation: { required: true } },
+										priority: { validation: { required: true } },
+										type: { validation: { required: true } },
+                            			state: { validation: { required: true } },
+										assigned_by: { validation: { required: true } },
+										attachment: { validation: { required: true } },
+										due_date: { validation: { required: true } },
+                            			name_agile: { validation: { required: true }},
+										status: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                  },
+				  
+				 dataTextField: "name_agile",
+                  dataValueField: "id",
+                  index: 1,
+                  change: onChange
+                });
+                    
+            function onChange(e) {
+               var dataItem = e.sender.dataItem();
+                $('#name_agile').text(dataItem.name_agile);
+				 $('#id_agile').text(dataItem.name_agile);
+                $('#id_project').text(dataItem.id_project);
+                $('#id').text(dataItem.id);
+                $('#state').text(dataItem.state); 
+				var tdate = new Date();
+				
+                function placeholder(element) {
+                    return $("<li class='list-item' id='placeholder'>Drop Here!</li>");
+                }
+                var listA= new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            listA.read();
+                        }
+                    },
+                    transport: {
+                       read: {
+							dataType : "json",
+                            url: "http://192.168.1.34:8000/api/service/state_service/issue/7",
+                            type: "POST",
+							contentType: "application/x-www-form-urlencoded",
+							data: {
+								"state" : 5,
+								"id_agile" : dataItem.id_agile,
+								"id" : dataItem.id,
+								"name_issue" : dataItem.name_issue,
+								"id_project" : dataItem.id_project,
+								"description" : dataItem.description,
+								"priority" : dataItem.priority,
+								"type"	: dataItem.type,
+								"assigned_by" : dataItem.assigned_by,
+								"attachment" : dataItem.attachment,
+								"due_date" : dataItem.due_date,
+								"status" : dataItem.status,
+								"name_agile" : dataItem.name_agile
+								
+							}
+							
+                        },
+                    },
+                  
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                        model: {
+                            id: "id",
+                                fields: {
+                                    name_issue: { validation: { required: true } },
+									id_project: { validation: { required: true } },
+									description: { validation: { required: true } },
+									priority: { validation: { required: true } },
+									type: { validation: { required: true } },
+                            		state: { validation: { required: true } },
+									assigned_by: { validation: { required: true } },
+									attachment: { validation: { required: true } },
+									due_date: { validation: { required: true } },
+                            		name_agile: { validation: { required: true }},
+									id_agile: { validation: { required: true }},
+									status: { validation: { required: true } }
+                                    }
+                                }   
+                            }
+                });
+
+      
+	
+                var listB= new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            listA.read();
+                        }
+                    },
+                    transport: {
+                       read: {
+							dataType : "json",
+                            url: "http://192.168.1.34:8000/api/service/state_service/issue/7",
+                            type: "POST",
+							contentType: "application/x-www-form-urlencoded",
+							data: {
+								"state" : 6,
+								"name_agile" : dataItem.name_agile,
+							}
+							
+                        },
+                    },
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    model: {
+                        id: "id",
+                        fields: {
+                           name_issue: {  validation: { required: true } },
+                           description: { validation: { required: true } },
+                           type  : { validation: { required: true } }
+                            }
+                        }
+                    }
+                });
+	
+                var listC= new kendo.data.DataSource({
+                type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            listA.read();
+                        }
+                    },
+                    transport: {
+                       read: {
+							dataType : "json",
+                            url: "http://192.168.1.34:8000/api/service/state_service/issue/7",
+                            type: "POST",
+							contentType: "application/x-www-form-urlencoded",
+							data: {
+								"state" : 11,
+								"name_agile" : dataItem.name_agile,
+							}
+							
+                        },
+                    },       
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    model: {
+                        id: "id",
+                        fields: {
+                            name_issue: {  validation: { required: true } },
+                            description: { validation: { required: true } },
+                    		type  : { validation: { required: true } }
+                            	}
+                        }
+                    }
+                });
+
+	
+                var listD= new kendo.data.DataSource({
+                type: "json",
+                      requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            listA.read();
+                        }
+                    },
+                    transport: {
+                       read: {
+							dataType : "json",
+                            url: "http://192.168.1.34:8000/api/service/state_service/issue/7",
+                            type: "POST",
+							contentType: "application/x-www-form-urlencoded",
+							data: {
+								"state" : 15,
+								"name_agile" : dataItem.name_agile,
+							}				
+                        },
+                    },
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    model: {
+                        id: "id",
+                        fields: {
+                           name_issue: {  validation: { required: true } },
+                            description: { validation: { required: true } },
+                        	type  : { validation: { required: true } }
+                            }
+                        }   
+                    }
+                });
+//A
+	 function RedirectPage (e) {
+		var id_page = $("#listA").data("kendoListView").dataItems()[0];
+		return window.location.href = "/#/issues_detail/"+id_page.id;
+	 }
+	 
+	 $("#listA").kendoListView({
+        dataSource: listA,
+		placeholder: placeholder,
+		dataBound : function(e){
+			 var ds = $("#listA").data("kendoListView").dataItems().length;
+			 if (ds == 0) {
+                $("#listA").html(kendo.template("<p align='center'><u><a id='linkAgile' onClick='ShowDialogAgile(false); return false;'>create new task</a>"));
+            }
+		},
+	    template:
+		"#if(name_issue == '') {#<p align='center'><u><a id='linkAgile' onClick='ShowDialogAgile(false); return false;'>create new task</a> #} else{#<div class='list-item'><a href='\\#\\\/issue_detail\\\/#: id #' >Name: #: name_issue # </a></div>#}#  "
+	 });
+	 
+	
+     $("#listB").kendoListView({
+        dataSource: listB,
+		placeholder: placeholder,
+        template: "<div class='list-item'><a href='\\#\\\/issue_detail\\\/#: id #' >Name: #: name_issue # </a></div>"
+    });
+     $("#listC").kendoListView({
+        dataSource: listC,
+		placeholder: placeholder,
+        template: "<div class='list-item'><a href='\\#\\\/issue_detail\\\/#: id #' >Name: #: name_issue #</a></div>"
+    });
+     $("#listD").kendoListView({
+        dataSource: listD,
+		placeholder: placeholder,
+        template: "<div class='list-item'><a href='\\#\\\/issue_detail\\\/#: id #' >Name: #: name_issue #</a></div>"
+    });
+     
+                    $("#listA").kendoDraggable({
+						filter: ".list-item",
+						hint: function(element) {
+						    return element.clone().css({
+						        "opacity": 50,
+						        "background-color": "#0cf"
+						    });
+						}
+					 });
+					$("#listA").kendoDropTarget({
+						filter: ".list-item",
+						drop: function( e) { //apply changes to the data after an item is dropped
+								 var source = $(e.draggable.element).attr('id');
+								 var target = e.dropTarget.attr('id');
+								 var draggableElement = e.draggable.currentTarget.clone();
+									if(source == "listA"){
+									   dataItem = $("#listA").data("kendoListView").dataItems()[0];; //find the corresponding dataItem by uid
+									   listA.remove(dataItem);
+									}
+									else if(source == "listB"){
+									   dataItem = $("#listB").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listB.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listC"){
+									   dataItem = $("#listC").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listC.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listD"){
+									   dataItem = $("#listD").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listD.remove(dataItem); //remove the item from ListA
+									}            
+									var temp = 5;
+						
+						$.ajax({
+							dataType : "json",
+							url : "http://192.168.1.34:8000/api/service/issue/"+dataItem.id,
+							type : "put",
+							contentType: "application/x-www-form-urlencoded",
+							data : {"id": dataItem.id,
+									"name_issue": dataItem.name_issue, 
+									"id_project": dataItem.id_project, 
+									"description": dataItem.description,
+									"priority": dataItem.priority, 
+									"type": dataItem.type,
+									"state": temp ,
+									"assigned_by": dataItem.assigned_by,
+									"attachment": dataItem.attachment,
+									"due_date": dataItem.due_date,
+									"name_agile": dataItem.name_agile,
+									"status": dataItem.status,
+									"id_user" : dataItem.id_user
+							},
+						
+							success : function (data) {
+								//alert("Your State "+"Ongoing");
+								document.location.reload();
+							},
+							error : function (data, errorThrown) {
+								alert("gagal");
+								//document.location.reload();
+							}
+			});
+			
+            listA.add(dataItem); //add the item to ListB
+		}
+    });
+                    $("#listB").kendoDraggable({
+						filter: ".list-item",
+						hint: function(element) {
+						    return element.clone().css({
+						        "opacity": 50,
+						        "background-color": "#0cf"
+						    });
+						}
+					 });
+					$("#listB").kendoDropTarget({
+						filter: ".list-item",
+						drop: function( e) { //apply changes to the data after an item is dropped
+								 var source = $(e.draggable.element).attr('id');
+								 var target = e.dropTarget.attr('id');
+								 var draggableElement = e.draggable.currentTarget.clone();
+									if(source == "listA"){
+									   dataItem = $("#listA").data("kendoListView").dataItems()[0];; //find the corresponding dataItem by uid
+									   listA.remove(dataItem);
+									}
+									else if(source == "listB"){
+									   dataItem = $("#listB").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listB.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listC"){
+									   dataItem = $("#listC").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listC.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listD"){
+									   dataItem = $("#listD").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listD.remove(dataItem); //remove the item from ListA
+									}            
+									var temp = 6;
+						
+						$.ajax({
+							dataType : "json",
+							url : "http://192.168.1.34:8000/api/service/issue/"+dataItem.id,
+							type : "put",
+							contentType: "application/x-www-form-urlencoded",
+							data : {"id": dataItem.id,
+									"name_issue": dataItem.name_issue, 
+									"id_project": dataItem.id_project, 
+									"description": dataItem.description,
+									"priority": dataItem.priority, 
+									"type": dataItem.type,
+									"state": temp ,
+									"assigned_by": dataItem.assigned_by,
+									"attachment": dataItem.attachment,
+									"due_date": dataItem.due_date,
+									"name_agile": dataItem.name_agile,
+									"status": dataItem.status,
+									"id_user" : dataItem.id_user
+							},
+						
+							success : function (data) {
+								//alert("Your State "+"In Progress");
+								document.location.reload();
+							},
+							error : function (data, errorThrown) {
+								alert("gagal");
+								//document.location.reload();
+							}
+			});
+			
+            listB.add(dataItem); //add the item to ListB
+		}
+    });
+                    $("#listC").kendoDraggable({
+						filter: ".list-item",
+						hint: function(element) {
+						    return element.clone().css({
+						        "opacity": 50,
+						        "background-color": "#0cf"
+						    });
+						}
+					 });
+					$("#listC").kendoDropTarget({
+						filter: ".list-item",
+						drop: function( e) { //apply changes to the data after an item is dropped
+								 var source = $(e.draggable.element).attr('id');
+								 var target = e.dropTarget.attr('id');
+								 var draggableElement = e.draggable.currentTarget.clone();
+									if(source == "listA"){
+									   dataItem = $("#listA").data("kendoListView").dataItems()[0];; //find the corresponding dataItem by uid
+									   listA.remove(dataItem);
+									}
+									else if(source == "listB"){
+									   dataItem = $("#listB").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listB.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listC"){
+									   dataItem = $("#listC").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listC.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listD"){
+									   dataItem = $("#listD").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listD.remove(dataItem); //remove the item from ListA
+									}            
+									var temp = 11;
+						
+						$.ajax({
+							dataType : "json",
+							url : "http://192.168.1.34:8000/api/service/issue/"+dataItem.id,
+							type : "put",
+							contentType: "application/x-www-form-urlencoded",
+							data : {"id": dataItem.id,
+									"name_issue": dataItem.name_issue, 
+									"id_project": dataItem.id_project, 
+									"description": dataItem.description,
+									"priority": dataItem.priority, 
+									"type": dataItem.type,
+									"state": temp ,
+									"assigned_by": dataItem.assigned_by,
+									"attachment": dataItem.attachment,
+									"due_date": dataItem.due_date,
+									"name_agile": dataItem.name_agile,
+									"status": dataItem.status,
+									"id_user" : dataItem.id_user
+							},
+						
+							success : function (data) {
+								//alert("Your State "+"Verified");
+								document.location.reload();
+							},
+							error : function (data, errorThrown) {
+								alert("gagal");
+								//document.location.reload();
+							}
+			});
+			
+            listC.add(dataItem); //add the item to ListB
+		}
+    });
+                    $("#listD").kendoDraggable({
+						filter: ".list-item",
+						hint: function(element) {
+						    return element.clone().css({
+						        "opacity": 50,
+						        "background-color": "#0cf"
+						    });
+						}
+					 });
+					$("#listD").kendoDropTarget({
+						filter: ".list-item",
+						drop: function( e) { //apply changes to the data after an item is dropped
+								 var source = $(e.draggable.element).attr('id');
+								 var target = e.dropTarget.attr('id');
+								 var draggableElement = e.draggable.currentTarget.clone();
+									if(source == "listA"){
+									   dataItem = $("#listA").data("kendoListView").dataItems()[0];; //find the corresponding dataItem by uid
+									   listA.remove(dataItem);
+									}
+									else if(source == "listB"){
+									   dataItem = $("#listB").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listB.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listC"){
+									   dataItem = $("#listC").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listC.remove(dataItem); //remove the item from ListA
+									}
+									else if(source == "listD"){
+									   dataItem = $("#listD").data("kendoListView").dataItems()[0]; //find the corresponding dataItem by uid
+									   listD.remove(dataItem); //remove the item from ListA
+									}            
+									var temp = 15;
+						
+						$.ajax({
+							dataType : "json",
+							url : "http://192.168.1.34:8000/api/service/issue/"+dataItem.id,
+							type : "put",
+							contentType: "application/x-www-form-urlencoded",
+							data : {"id": dataItem.id,
+									"name_issue": dataItem.name_issue, 
+									"id_project": dataItem.id_project, 
+									"description": dataItem.description,
+									"priority": dataItem.priority, 
+									"type": dataItem.type,
+									"state": temp ,
+									"assigned_by": dataItem.assigned_by,
+									"attachment": dataItem.attachment,
+									"due_date": dataItem.due_date,
+									"name_agile": dataItem.name_agile,
+									"status": dataItem.status,
+									"id_user" : dataItem.id_user
+							},
+						
+							success : function (data) {
+								//alert("Your State "+"Fixed");
+								document.location.reload();
+							},
+							error : function (data, errorThrown) {
+								alert("gagal");
+								//document.location.reload();
+							}
+			});
+			
+            listD.add(dataItem); //add the item to ListB
+		}
+    });
+                }
+});
+</script>
+
+<style>
+                #example {
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                }
+
+                .demo-section {
+                    padding: 50px 70px;
+                }
+
+                .list-wrapper {
+                    overflow: hidden;
+                }
+
+                #listA, #listB, #listC, #listD {
+                    width: 210px;
+                    min-height: 40px;
+                    margin: 0;
+                    padding: 0;
+                    border: 1px solid #dddddd;
+                    border-radius: 4px;
+                    float: left;
+                }
+               .list-item {
+                    list-style-type: none;
+                    width: 200px;
+                    margin: 5px;
+                    line-height: 30px;
+                    text-align: center;
+                    background-color: #222222;
+                    color: #ffffff;
+                    border-radius: 3px;
+                }
+
+                #listA .list-item {
+                    background-color: #54b8fa;
+                    color: #000000;
+                }
+
+                #listB .list-item {
+                    background-color: #ff879e;
+                    color: #000000;
+                }
+
+                #listC .list-item {
+                    background-color: #66cc66;
+                    color: #000000;
+                }
+
+                #listD .list-item {
+                    background-color: #ffcc33;
+                    color: #000000;
+                }
+
+                #placeholder.list-item {
+                    background-color: #ffffff;
+                    color: #777;
+                }
+                @media screen and (max-width: 500px) {
+                    .demo-section {
+                        display: none;
+                    }
+                }
+            </style>
+        </div>
+</body>
+</html>

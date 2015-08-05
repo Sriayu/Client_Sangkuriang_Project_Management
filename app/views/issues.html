@@ -1,0 +1,437 @@
+<html><head></head>
+    
+    <link href="styles/examples-offline.css" rel="stylesheet">
+    <link href="styles/kendo-styles/kendo.common.min.css" rel="stylesheet">
+    
+    <link href="styles/kendo-styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href="styles/kendo-styles/kendo.default.min.css" rel="stylesheet">
+    <link href="styles/kendo-styles/kendo.dataviz.min.css" rel="stylesheet">
+    <link href="styles/kendo-styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/angular.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+    <script src="scripts/console.js"></script>
+<body>	
+<!-- ************************************************************ DropDownlist **********************************************-->
+<!--<input id="dropdownlist" /><br/>
+<!--<span id="id_project" >Id</span><br/>
+<span id="summary" >Name</span><br/>-->
+
+
+            <script>
+			//getURL
+				 var href = window.location.href;
+				 //alert(href);
+				 var splitURL= href.split('/');
+				// alert(splitURL[5]);
+				 var id= splitURL[5];
+				
+			
+                $("#dropdownlist").kendoDropDownList({
+                  dataSource: {
+                    transport: {
+                                read: {
+                                	dataType: "json",
+									url: "http://192.168.1.47:9000/api/viewProject/"+id 
+                                    //url: "http://192.168.1.47:9000/api/services/project"
+                                }
+                            },
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id_project: "id_project",
+                            		fields: {
+                            			id_project: { editable: false, nullable: true },
+                            			project_name: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                  },
+                  dataTextField: "project_name",
+                  dataValueField: "id_project",
+                  index: 1,
+                  change: onChange
+                });
+// ************************************************************ DropDownlist **********************************************
+// ************************************************************ Issues of Project **********************************************
+			function categoryDropDownEditor(container, options) {
+                    $('<input required data-text-field="type_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            dataSource: {
+                            transport: {
+                                read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.47:9000/api/services/type"
+                                }
+                            },
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+                            			id: { editable: false, nullable: true },
+                            			type: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                        }
+                        });
+                }
+				
+				function priorityDropDownEditor(container, options) {
+                    $('<input required data-text-field="priority_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            dataSource: {
+                            transport: {
+                                read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.47:9000/api/services/priority"
+                                }
+                            },
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+                            			id: { editable: false, nullable: true },
+                            			priority_name: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                        }
+                        });
+                }
+				
+				function StateDropDownEditor(container, options) {
+                    $('<input required data-text-field="status_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            dataSource: {
+                            transport: {
+                                read: {
+                                	dataType: "json",
+                                    url: "http://192.168.1.47:9000/api/services/status"
+                                }
+                            },
+                            schema: {
+                            	data: "Data",
+                            	total: "Total",
+                            	model: {
+                            		id: "id",
+                            		fields: {
+                            			id: { editable: false, nullable: true },
+                            			status_name: { validation: { required: true } }
+                            		}
+                        			}
+                        		}
+                        }
+                        });
+                }
+                
+                function dateTimeEditor(container, options) {
+                	$('<input data-text-field="' + options.field + '" data-value-field="' + options.field + '" data-bind="value:' + options.field + '" data-format="' + options.format + '"/>')
+                	.appendTo(container)
+                	.kendoDatePicker({
+						animation: false
+					});
+                }
+
+                function FileEditor(container, options) 
+                {
+                	$('<input type="file" name="' + options.field + '"/>')
+                	.appendTo(container)
+                	.kendoUpload({
+                			async:{
+                				saveUrl: "",
+                				autoUpload: true
+                			}
+                	});
+                }
+		
+                function onChange(e) {
+                	
+                    var dataItem = e.sender.dataItem();
+					dataSource = new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            dataSource.read();
+                        }
+                    },
+                    transport: {
+                        read:"http://192.168.1.47:9000/api/service_issues/"+dataItem.id_project,           
+                        update: {
+                            url: function (issue) {
+                        		return "http://192.168.1.47:9000/api/service/issue/{param: {id:"+issue.id+"}}"
+                        	},
+                        	type: "put"
+                        },
+                        create: {
+                            url: "http://192.168.1.47:9000/api/service/issue",
+                            type: "POST"
+                        },
+                        destroy: {
+                        	url: function (issue) {
+                        		return "http://192.168.1.47:9000/api/service/issue/{param: {id:"+issue.id+"}}"
+                        	},
+                        	type: "DELETE"
+                        },
+						 parameterMap: function(data, type) {
+						if (type == "create") {
+							delete data.id;
+							data.due_date=kendo.toString(data.due_date,"yyyy-MM-dd");
+							data.type = data.type.id;
+							data.state = data.state.id;
+							data.priority = data.priority.id;
+							return data;
+						}else if(type == "update"){
+							data.due_date=kendo.toString(data.due_date,"yyyy-MM-dd");
+							return data;
+						}else{
+							return data;
+						}
+						}
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                        model: {
+                           id: "id",
+						   
+                            fields: {
+								id: { editable: true},
+                                id_project: { defaultValue:dataItem.id },
+                                name_issue: { validation: { required: false } },
+                                attachment: { type:"file",validation: {required:false} },
+                                description: { validation: { required: false } },
+                                priority: { defaultValue: { id: 1, priority_name: "Show-Stopper"} },
+                                type: { defaultValue: { id: 1, type_name: "Bug"} },
+                                state: { defaultValue: { id: 1, status_name: "Ongoing"} },
+                                assigned_by: { validation: { required: false } },
+                                due_date: { validation: { required: false } }
+                            }
+                        }
+                    }
+                });
+                	$("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    detailTemplate: kendo.template($("#detail-template").html()),
+                    detailInit: detailInit,
+                    toolbar: ["create"],
+                    scrollable: false,
+                    columns: [
+                        {
+                            field: "name_issue",
+                            title: "Name"
+                        }, {
+                            field: "description",
+                            title: "Description"
+                        },
+                        {
+                            field: "priority",
+                            title: "Priority",
+							editor: priorityDropDownEditor
+                        },
+                        {
+                            field: "attachment",
+                            title: "Attachment",
+                            editor:FileEditor
+                        }, {
+                            field: "type",
+                            title: "Type", 
+                            editor: categoryDropDownEditor
+                        },{
+                            field: "state",
+                            title: "State",
+							editor: StateDropDownEditor
+                        },{
+							field: "assigned_by",
+                            title: "Assigned_by"
+                        },{
+                        	field:"due_date", 
+                        	title:"Due Date", 
+                        	format:"{0:yyyy-MM-dd}", 
+                        	editor: dateTimeEditor
+                        },
+                        {
+						    command: ["edit","destroy"],
+                            title: "&nbsp;",
+                            width: "200px"
+                        }
+                    ],
+                    editable: "popup"
+                });
+                	
+// ************************************************************ Issues of Project **********************************************                
+//********************************************************************************* Member of Project *****************************************
+      var dataSource2 = new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            dataSource2.read();
+                        }
+                    },
+                    transport: {
+                        read: {
+                            url: "http://192.168.1.47:9000/api/service/"+dataItem.id_project,
+                            type: "GET"
+                        }
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                        model: {
+                            id: "id",
+                            fields: {
+                                username: { validation: { required: true } }
+                            }
+                        }
+                    }
+                });
+				
+				var dataSource3 = new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            dataSource3.read();
+                        }
+                    },
+                    transport: {
+                        read: {
+                            url: "http://192.168.1.47:9000/api/services/comment",
+                            type: "GET"
+                        }
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                        model: {
+                            id: "id",
+                            fields: {
+                                txt_comment: { validation: { required: true } },
+								date: { validation: { required: true } },
+								assigned_to: { validation: { required: true } }
+                            }
+                        }
+                    }
+                });
+      
+     			 function detailInit(e) {
+                    var detailRow = e.detailRow;
+
+                    detailRow.find(".tabstrip").kendoTabStrip({
+                        animation: {
+                            open: { effects: "fadeIn" }
+                        }
+                    });
+                }
+				
+				function renderPage(e){
+					console.log(e);
+				}
+                
+                $("#grid2").kendoGrid({
+                    dataSource: dataSource2,
+                    //groupable: true,
+                    //sortable: true,
+                    //filterable: true,
+                  /*  pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },*/
+                    //detailTemplate: kendo.template($("#detail-template").html()),
+                    //detailInit: detailInit,
+                    //toolbar: ["create"],
+                    scrollable: true,
+                    columns: [
+                        {
+                            field: "username",
+                            title: "Member of Project",
+                            width: "150px"
+                        }
+                    ]
+                });
+				
+				$("#grid3").kendoGrid({
+                    dataSource: dataSource3,
+                    //groupable: true,
+                    //sortable: true,
+                    //filterable: true,
+                  /*  pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },*/
+                    //detailTemplate: kendo.template($("#detail-template").html()),
+                    //detailInit: detailInit,
+                    //toolbar: ["create"],
+                    scrollable: true,
+                    columns: [
+                        {
+                            field: "txt_comment",
+                            title: "Comment"
+                        },
+						{
+                            field: "assigned_to",
+                            title: "Assignt To"
+                        },
+						{
+                            field: "date",
+                            title: "Date"
+                        }
+                    ]
+                });
+                  };
+            </script>
+
+<!--********************************************************************************* Member of Project ***************************************** -->
+<!--<div id="grid" style="width:800px; padding:2px;  margin:10px; margin-left:-320px;"></div>    -->   
+<table>
+	<tr>
+			<td>
+				<div id="grid" style="width:800px; padding:10px; font-size: 10px; font-family: Arial, Helvetica, sans-serif;"></div>    
+				<script type="text/x-kendo-template" id="detail-template">
+				<div class="tabstrip">
+                <ul>
+                    <li class="k-state-active">User Information</li>
+                </ul>
+				<div class="user-details">
+                    <ul>
+                        <li><label>ID Project:</label><a id="#=id #" href="\\#/issue_detail/#=id#">#= id #</a>
+						</li>
+                        <li><label>Summary:</label>#= description #</li>
+	                 </ul>
+            </div>
+        </script>
+        </div>
+			</td>
+			<td valign="top">
+			 <div id="grid2" style="width:100px; padding:2px;  margin:5px; font-size: 10px; font-family: Arial, Helvetica, sans-serif;"></div>
+			</td>
+			
+			</td>
+			<td valign="top">
+			 <div id="grid3" style="width:300px; padding:2px;  margin:5px; font-size: 10px; font-family: Arial, Helvetica, sans-serif;"></div>
+			</td>
+	</tr>
+ </table>
+</body>	
+</html>

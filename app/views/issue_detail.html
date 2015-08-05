@@ -1,0 +1,154 @@
+<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.js"></script>
+<script type="text/javascript" src="scripts/kendo-scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="styles/kendo-styles/kendo.common.min.css" />
+<link rel="stylesheet" href="styles/kendo-styles/kendo.default.min.css" />
+<script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+<script src="scripts/app.js"></script>
+<script src= "scripts/detail.js"/>
+<link rel="stylesheet" href="styles/detail.css">
+
+<div ng-app="clientApp" ng-controller="IssueDetailCtrl as ctrl" ng-repeat="x in names">
+<br />
+<br />
+<div><input type="button" value="Attachment" />
+</div>
+<br />
+<div><h4>Detail Of Issue: {{ x.name_issue }}<h4></div> 
+<br />
+<table>
+  <tr>
+	<td>Name : </td>
+    <td>{{ x.name_issue }}</td>
+  </tr>
+  <tr>
+	<td>Description : </td>
+	<td>{{ x.description }}</td>
+  </tr>
+  <tr>
+	<td>Assigned By : </td>
+    <td>{{ x.assigned_by }}</td>
+  </tr>
+  <tr>
+	<td>Due Date : </td>
+	<td>{{ x.due_date }}</td>
+  </tr>
+</table>
+<br />
+<div>
+<div id="container">
+
+  <ul class="tabs"> 
+        <li class="active" rel="tab1"> Comment</li>
+        <li rel="tab2"> Linked Issue</li>
+        <li rel="tab3"> Similar Issue</li>
+        
+    </ul>
+
+<div class="tab_container"> 
+
+     <div id="tab1" class="tab_content"> 
+		<table ng-repeat="comment in comments" style="width:100%"
+			<tr>
+				<td>Comment Name</td>
+				<td>Comment Date</td>
+				<td>Assign To</td>
+			</tr>
+			<tr>
+				<td>{{ comment.txt_comment }}</td>
+				<td>{{ comment.date }}</td>
+				<td>{{ comment.assigned_to }}</td>
+			</tr>
+		</table>
+		<input type="button" id="btnShowComment" value="Comment" />
+	<br /><br />       
+    
+	<div id="output"></div>
+    
+	<div id="overlay" class="web_dialog_overlay"></div>
+    
+	<div id="dialog" class="web_dialog">
+	<table style="width: 100%; border: 0px;" cellpadding="3" cellspacing="0">
+      <tr>
+         <td class="web_dialog_title">Comment</td>
+         <td class="web_dialog_title align_right">
+            <a href="#" id="btnClose">Close</a>
+         </td>
+      </tr>
+      <tr>
+         <td>&nbsp;</td>
+         <td>&nbsp;</td>
+      </tr>
+      <tr>
+         <td>&nbsp;</td>
+         <td>&nbsp;</td>
+      </tr>
+      <tr>
+         <td colspan="2" style="padding-left: 15px;">
+            <div id="brands">
+               <div class="demo-section k-header">
+				<div id="tickets">
+				<form id="CommentForm" class="col s12" method="post" action="#">
+                <ul id="fieldlist">
+                    <li>
+                        <label for="id_issue" class="required">ID Issue</label>
+                        <input type="text" id="id_issue" name="id_issue" class="k-textbox" value="{{x.id}}" required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    <li>
+                        <label for="txt_comment" class="required">Comment</label>
+                        <textarea type="text" id="txt_comment" name="txt_comment" class="k-textbox" placeholder="Comment" required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+					<li>
+                        <label for="date" class="required">Date</label>
+                        <input type="text" id="date" name="date" class="k-textbox" placeholder="Date" required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+					
+					<li>
+                        <label for="assigned_to" class="required">Assigned To</label>
+                        <input type="text" id="assigned_to" name="assigned_to" class="k-textbox" placeholder="Assigned To" required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    
+				   
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" id="submit">Submit</button>
+                    </li>
+                    <li class="status">
+                    </li>
+					
+                </ul>
+				</form>
+				</div>
+				</div>
+            </div>
+         </td>
+      </tr>
+      <tr>
+         <td>&nbsp;</td>
+         <td>&nbsp;</td>
+      </tr>
+      <tr>
+         <td colspan="2" style="text-align: center;">
+            <input id="btnSubmit" type="button" value="Submit" ng-click="ctrl.saveRecipe(recipe)"/>
+         </td>
+      </tr>
+   </table>
+</div>
+     </div><!-- #tab1 -->
+     <div id="tab2" class="tab_content"> 
+
+     	<strong>
+      	Empty Linked Issue
+      	</strong>
+
+
+     </div><!-- #tab2 -->
+     <div id="tab3" class="tab_content"> 
+
+      	<strong>
+      	Empty Similar Issue
+      	</strong>
+     </div><!-- #tab3 -->     
+ </div> <!-- .tab_container --> 
+
+</div> <!-- #container --></div>
+</div>

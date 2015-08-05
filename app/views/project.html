@@ -1,0 +1,171 @@
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.default.min.css" />
+
+	<script src="scripts/app.js"></script>
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+</head>
+
+<body>
+        <div id="example">
+        <div class="demo-section k-header">
+        <div id="tickets">
+            <form id="ProjectForm" class="col s12" method="post" action="#">
+                <ul id="fieldlist">
+                    <li>
+                        <label for="project_name" class="required">Project Name</label>
+                        <input type="text" id="project_name" name="project_name" class="k-textbox" placeholder="Project Name.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    <li>
+                        <label for="description" class="required">Description</label>
+                        <input type="text" id="description" name="description" class="k-textbox" placeholder="Description.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+					<li>
+                        <label for="project_lead" class="required">Project Lead</label>
+                        <input type="project_lead" id="project_lead" name="project_lead" class="k-textbox" placeholder="Project Lead.." required validationMessage="Enter {0}" style="width: 220px;" />
+                    </li>
+                    
+				   
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" id="submit">Submit</button>
+                    </li>
+                    <li class="status">
+                    </li>
+					
+                </ul>
+            </form>
+        </div>
+        </div>
+
+            <style>
+                #fieldlist {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                #fieldlist li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                    text-align: left;
+                }
+
+                #fieldlist label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                #fieldlist li.status {
+                    text-align: center;
+                }
+
+                #fieldlist li .k-widget:not(.k-tooltip),
+                #fieldlist li .k-textbox {
+                    margin: 0 5px 5px 0;
+                }
+
+                .confirm {
+                    padding-top: 1em;
+                }
+
+                .valid {
+                    color: green;
+                }
+
+                .invalid {
+                    color: red;
+                }
+
+                #fieldlist li input[type="checkbox"] {
+                    margin: 0 5px 0 0;
+                }
+
+                span.k-widget.k-tooltip-validation {
+                  display; inline-block;
+                    width: 160px;
+                    text-align: left;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    background: none;
+                    box-shadow: none;
+                    color: red;
+                }
+
+                .k-tooltip-validation .k-warning {
+                    display: none;
+                }
+            </style>
+
+            <script>
+                $(document).ready(function() {
+                    var validator = $("#ProjectForm").kendoValidator().data("kendoValidator"),
+                    status = $(".status");
+                    var temp= 0;
+        
+					//getURL
+				 var href = window.location.href;
+				 //alert(href);
+				 var splitURL= href.split('/');
+				// alert(splitURL[5]);
+				 var idUser= splitURL[5];
+					
+                    $("#ProjectForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var projectName = $('[name=project_name]').val();
+                       var deription = $('[name=description]').val();
+                       var projectLead = $('[name=project_lead]').val();
+                    
+                       window.alert( $('[name=project_name]').val() );
+                       window.alert( $('[name=description]').val() );
+                       window.alert( $('[name=project_lead]').val() );
+                     $.ajax({
+                                        dataType : "json",
+                                        url: "http://192.168.1.47:9000/api/service/project",
+                                        type: "POST",
+                                        contentType: "application/x-www-form-urlencoded",
+                                        data: "project_name="+projectName+"&description="+deription+"&project_lead="+projectLead,
+                                       
+										success : function (result) {
+                                                   $.ajax({
+														dataType : "json",
+														url: "http://192.168.1.47:9000/api/service/user_project",
+														type: "POST",
+														contentType: "application/x-www-form-urlencoded",
+														data: "id_user="+idUser+"&id_project="+idUser+"&id_role=4",
+                                       
+														success : function (result) {
+															status.text("sukses!");
+															window.location.href = "/#/issues/"+idUser;
+																			
+														},
+														error : function (test, errorThrown) {
+															window.alert("gagal");
+															window.location.href = "/#/project/"+idUser;
+														},
+                                       
+                                    }); 
+                                                                         
+                                         },
+                                        error : function (test, errorThrown) {
+                                                window.alert("gagal");
+                                                temp = 0;
+                                        },
+                                       
+                                    });                         
+                         
+                       
+                    });
+                });
+            </script>
+            
+        </div>
+		</body>
+		</html>

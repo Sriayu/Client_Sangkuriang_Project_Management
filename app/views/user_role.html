@@ -1,0 +1,153 @@
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="styles/kendo-styles/kendo.default.min.css" />
+
+	<script src="scripts/app.js"></script>
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+</head>
+
+<body>
+        <div id="example">
+        <div class="demo-section k-header">
+        <div id="tickets">
+            <form id="RoleForm" class="col s12" method="post" action="#" >
+                <ul id="fieldlist">
+                    <li>
+                        <label for="id_project" class="required">Project Name</label>
+                        <!--<input type="text" id="username" name="username" class="k-textbox" placeholder="Username.." required validationMessage="Enter {0}" style="width: 220px;" />
+						
+						--><select title="Select one"  ng-app="clientApp" ng-controller="UserRoleCtrl"  id="id_project" name="id_project" >
+							<option ng-repeat="x in project" value="{{ x.id }}">{{ x.project_name }}</option>
+						</select>
+
+                    </li>
+                    <li>
+					<label for="id_role" class="required">Role In Project</label>
+                        <select title="Select one"  ng-app="clientApp" ng-controller="UserRoleCtrl"  id="id_role" name="id_role" >
+							<option ng-repeat="x in role" value="{{ x.id }}">{{ x.role_name }}</option>
+						</select>
+                    </li>                   
+				   
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" id="submit">Submit</button>
+                    </li>
+                    <li class="status">
+                    </li>
+					
+                </ul>
+            </form>
+        </div>
+        </div>
+
+            <style>
+                #fieldlist {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                #fieldlist li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                    text-align: left;
+                }
+
+                #fieldlist label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                #fieldlist li.status {
+                    text-align: center;
+                }
+
+                #fieldlist li .k-widget:not(.k-tooltip),
+                #fieldlist li .k-textbox {
+                    margin: 0 5px 5px 0;
+                }
+
+                .confirm {
+                    padding-top: 1em;
+                }
+
+                .valid {
+                    color: green;
+                }
+
+                .invalid {
+                    color: red;
+                }
+
+                #fieldlist li input[type="checkbox"] {
+                    margin: 0 5px 0 0;
+                }
+
+                span.k-widget.k-tooltip-validation {
+                  display; inline-block;
+                    width: 160px;
+                    text-align: left;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    background: none;
+                    box-shadow: none;
+                    color: red;
+                }
+
+                .k-tooltip-validation .k-warning {
+                    display: none;
+                }
+            </style>
+
+            <script>
+                $(document).ready(function() {
+                    var validator = $("#RoleForm").kendoValidator().data("kendoValidator"),
+                    status = $(".status");
+                    var temp= 0;
+					
+						//getURL
+				 var href = window.location.href;
+				 //alert(href);
+				 var splitURL= href.split('/');
+				// alert(splitURL[5]);
+				 var idUser= splitURL[5];
+        
+                    $("#RoleForm").submit(function(event) {  
+                       
+                       event.preventDefault();
+                       var id_project = $('[name=id_project]').val();
+                       var id_role = $('[name=id_role]').val();
+                     $.ajax({
+                                        dataType : "json",
+                                        url: "http://192.168.1.47:9000/api/service/user_project",
+                                        type: "POST",
+                                        contentType: "application/x-www-form-urlencoded",
+                                        data: "id_project="+id_project+"&id_user="+idUser+"&id_role="+id_role,
+                                       
+						success : function (result) {
+                                                    status.text("sukses!");
+                                                    window.location.href = "/#/issues/"+idUser;
+                                                                         
+                                         },
+                                        error : function (test, errorThrown) {
+                                                window.alert("gagal");
+												window.location.href = "/#/user_role/"+idUser;
+                                                temp = 0;
+                                        },
+                                       
+                                    });                         
+                         
+                       
+                    });
+                });
+            </script>
+            
+        </div>
+		</body>
+		</html>

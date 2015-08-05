@@ -1,0 +1,94 @@
+    <link href="styles/kendo-styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="styles/kendo-styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+    <link href="styles/kendo-styles/kendo.flat.min.css" rel="stylesheet" type="text/css" />
+    <link href="styles/kendo-styles/kendo.dataviz.flat.min.css" rel="stylesheet" type="text/css" />
+    <script src="scripts/kendo-scripts/jquery.min.js"></script>
+    <script src="scripts/kendo-scripts/kendo.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.js"> </script>
+<body>	
+<div id="example">
+        <div id="grid"></div>
+
+        <script type="text/x-kendo-template" id="detail-template">
+            <div class="tabstrip">
+                <ul>
+                    <li class="k-state-active">User Information</li>
+                </ul>
+                <div class="user-details">
+                    <ul>
+                        <li><label>Username:</label>#= username #</li>
+                        <li><label>Email:</label>#= email #</li>
+						<a href="\\#/user_role/#=id#"><button >Role</button></a>
+                    </ul>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/javascript">
+		
+            $(document).ready(function () {
+                var dataSource = new kendo.data.DataSource({
+                    type: "json",
+                    requestEnd: function (e) {
+                        if (e.type !== "read") {
+                            dataSource.read();
+                        }
+                    },
+                    transport: {
+                        read: {
+                            url: "http://192.168.1.47:9000/api/services/users",
+                            type: "GET"
+                        }
+                    },
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    pageSize: 10,
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { editable: false, nullable: true },
+                                username: { validation: { required: true } },
+                                email: { validation: { required: true } },
+                                password: { validation: { required: true } }
+                            }
+                        }
+                    }
+                });
+
+                function detailInit(e) {
+                    var detailRow = e.detailRow;
+
+                    detailRow.find(".tabstrip").kendoTabStrip({
+                        animation: {
+                            open: { effects: "fadeIn" }
+                        }
+                    });
+                }
+
+                $("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    /*groupable: true,
+                    sortable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },*/
+                    detailTemplate: kendo.template($("#detail-template").html()),
+                    detailInit: detailInit,
+                    toolbar: ["create"],
+                    columns: [
+                        {
+                            field: "username",
+                            title: "Username"
+                        }
+                    ]
+                });
+            });
+        </script>	
+</body>	
